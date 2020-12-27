@@ -1,5 +1,6 @@
 const fs = require("fs");
 const os = require("os");
+const path = require("path");
 const homedir = os.homedir();
 const utils = require("./utils");
 
@@ -18,17 +19,11 @@ const isKeyAlive = (timeToLive) => {
   return false;
 };
 
-class FileStore {
+exports.FileStore = class {
   constructor(filePath = null) {
     try {
-      this.path =
-        (filePath ? filePath : homedir) +
-        (process.platform == "win32" ? "\\filestore.txt" : "/firestore.txt");
-      // if (filePath != null) {
-      //   path =
-      //     filePath +
-      //     (process.platform == "win32" ? "\\filestore.txt" : "/firestore.txt");
-      // }
+      this.fileName = "filestore.txt";
+      this.path = path.join(filePath ? filePath : homedir, this.fileName);
 
       fs.openSync(this.path, "w");
     } catch (error) {
@@ -42,9 +37,8 @@ class FileStore {
     for (let i = 0; i < array.length; i++) {
       const pair = array[i];
       if (pair !== "") {
-        let dataToWrite = `${pair}`;
+        let dataToWrite = `${pair}\n`;
         fs.appendFileSync(this.path, dataToWrite, { encoding: "utf8" });
-        fs.appendFileSync(this.path, "\n", { encoding: "utf8" });
       }
     }
   }
@@ -98,6 +92,7 @@ class FileStore {
 
       // append data to the filestore
       fs.appendFileSync(this.path, dataToWrite);
+      return 1;
     } catch (error) {
       console.log(error.message);
       return -1;
@@ -194,6 +189,7 @@ class FileStore {
 
       // re-write the filestore with updated data
       this.appendDataFromArray(fileData);
+      return 1;
     } catch (error) {
       console.error(error.message);
       return -1; // or return {}
@@ -201,18 +197,18 @@ class FileStore {
   }
 }
 
-const main = () => {
-  try {
-    let filePath = homedir + "\\testing";
-		const store = new FileStore(filePath);
+// const main = () => {
+//   try {
+//     let filePath = homedir + "\\testing";
+// 		const store = new FileStore(filePath);
 		
-    store.addEntry("Owais",{"data":1});
-    store.addEntry("Owais0",{"data":2});
-    // store.addEntry("Owais3",{"data":3}, 60);
-    // console.log(readByKey("Owais3"));
-    store.deleteByKey("Owais3");
-  } catch (error) {
-    console.error(error.message);
-  }
-};
-main();
+//     store.addEntry("Owais",{"data":1});
+//     store.addEntry("Owais0",{"data":2});
+//     // store.addEntry("Owais3",{"data":3}, 60);
+//     // console.log(readByKey("Owais3"));
+//     store.deleteByKey("Owais0");
+//   } catch (error) {
+//     console.error(error.message);
+//   }
+// };
+// main();
