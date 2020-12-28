@@ -1,4 +1,4 @@
-# Node-User-Auth
+# Filestore
 
 This project was generated with [Node](https://github.com/nodejs/node) version v14.13.0.
 Run `npm install` to install all the dependencies.
