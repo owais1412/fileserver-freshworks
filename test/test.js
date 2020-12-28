@@ -5,24 +5,23 @@ const FileStore = require("../index").FileStore;
 const fileName = "filestore.txt";
 
 describe("Store initialization with default path", () => {
-  it("This test should pass with correct path", () => {
+  it("Should pass with correct path", () => {
     const store = new FileStore();
     const actual = store.path;
     const expected = path.join(homedir, fileName);
     expect(actual).to.equal(expected);
   });
 
-  it("This test should fail with wrong path", () => {
-    const filePath = path.join(homedir, "testing");
+  it("Should fail with wrong path", () => {
     const store = new FileStore();
     const actual = store.path;
-    const expected = path.join(filePath, "wrong_dir", fileName);
+    const expected = path.join(homedir, "wrong_dir", fileName);
     expect(actual).to.equal(expected);
   });
 });
 
 describe("Store initialization with custom path", () => {
-  it("This test should pass with correct path", () => {
+  it("Should pass with correct path", () => {
     const filePath = path.join(homedir, "testing");
     const store = new FileStore(filePath);
     const actual = store.path;
@@ -30,11 +29,29 @@ describe("Store initialization with custom path", () => {
     expect(actual).to.equal(expected);
   });
 
-  it("This test should fail with wrong path", () => {
+  it("Should fail with wrong path", () => {
     const filePath = path.join(homedir, "testing");
     const store = new FileStore(filePath);
     const actual = store.path;
     const expected = path.join(filePath, "wrong_dir", fileName);
+    expect(actual).to.equal(expected);
+  });
+
+
+  /**
+   * This test case should be run separately with no filestore prebuilt
+   */
+  it("Should fail with multiple access of same filestore", () => {
+    const filePath = path.join(homedir, "testing1");
+    // create a new store
+    const store = new FileStore(filePath);
+    // add some entry to the store
+    store.addEntry("key2", { data: 1 });
+    // create another store at the same path
+    const store1 = new FileStore(filePath);
+    // errorFileExists should be come true
+    const actual = store1.errorFileExists;
+    const expected = true;
     expect(actual).to.equal(expected);
   });
 });

@@ -19,36 +19,38 @@ const isKeyAlive = (timeToLive) => {
   return false;
 };
 
+const appendDataFromArray = (path, array) => {
+  fs.openSync(path, "w");
+  for (let i = 0; i < array.length; i++) {
+    const pair = array[i];
+    if (pair !== "") {
+      let dataToWrite = `${pair}\n`;
+      fs.appendFileSync(path, dataToWrite, { encoding: "utf8" });
+    }
+  }
+};
+
+const readFile = (path) => {
+  return fs.readFileSync(path, "utf8");
+}
+
+const getSize = (path) => {
+  return fs.statSync(path).size;
+}
+
 exports.FileStore = class {
   constructor(filePath = null) {
     try {
       this.fileName = "filestore.txt";
       this.path = path.join(filePath ? filePath : homedir, this.fileName);
-
-      fs.openSync(this.path, "w");
+      fs.accessSync(this.path);
+      this.errorFileExists = true;
+      console.error("Error filestore already exist");
     } catch (error) {
-      console.error(error.message);
-      return -1;
+      this.errorFileExists = false;
+      fs.openSync(this.path, "w");
+      // console.error(error.message);
     }
-  }
-
-  appendDataFromArray(array) {
-    fs.openSync(this.path, "w");
-    for (let i = 0; i < array.length; i++) {
-      const pair = array[i];
-      if (pair !== "") {
-        let dataToWrite = `${pair}\n`;
-        fs.appendFileSync(this.path, dataToWrite, { encoding: "utf8" });
-      }
-    }
-  }
-
-  readFile() {
-    return fs.readFileSync(this.path, "utf8");
-  }
-
-  getSize() {
-    return fs.statSync(this.path).size;
   }
 
   addEntry(key, value, timeToLive = null) {
@@ -65,8 +67,8 @@ exports.FileStore = class {
       }
 
       // check file size whether it is less than 1 GB or not
-      const fileSize = this.getSize();
-      if(fileSize >= 1073741824) {
+      const fileSize = getSize(this.path);
+      if (fileSize >= 1073741824) {
         throw new Error("File size cannot exceed 1 GB");
       }
 
@@ -90,7 +92,7 @@ exports.FileStore = class {
       dataToWrite += `-:-${valueAsString}\n`;
 
       // read the file
-      const fileData = this.readFile().split("\n");
+      const fileData = readFile(this.path).split("\n");
 
       // check whether the key already exists or not
       for (let pair of fileData) {
@@ -116,7 +118,7 @@ exports.FileStore = class {
       validateKey(key);
 
       // read the file
-      const fileData = this.readFile().split("\n");
+      const fileData = readFile(this.path).split("\n");
 
       // fetch value corresponds to the given key
       for (let pair of fileData) {
@@ -158,7 +160,7 @@ exports.FileStore = class {
       validateKey(key);
 
       // read the file
-      const fileData = this.readFile().split("\n");
+      const fileData = readFile(this.path).split("\n");
 
       // initialize the index of the entry to be deleted as -1
       let index = -1;
@@ -197,11 +199,11 @@ exports.FileStore = class {
       fileData.splice(index, 1);
 
       // re-write the filestore with updated data
-      this.appendDataFromArray(fileData);
+      appendDataFromArray(this.path, fileData);
       return 1;
     } catch (error) {
       console.error(error.message);
-      return -1; // or return {}
+      return -1;
     }
   }
-}
+};
