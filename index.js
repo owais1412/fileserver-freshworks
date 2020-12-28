@@ -42,8 +42,13 @@ exports.FileStore = class {
       }
     }
   }
+
   readFile() {
     return fs.readFileSync(this.path, "utf8");
+  }
+
+  getSize() {
+    return fs.statSync(this.path).size;
   }
 
   addEntry(key, value, timeToLive = null) {
@@ -57,6 +62,12 @@ exports.FileStore = class {
 
       if (!validateValue(value)) {
         throw new Error("Expected value of type 'json'");
+      }
+
+      // check file size whether it is less than 1 GB or not
+      const fileSize = this.getSize();
+      if(fileSize >= 1073741824) {
+        throw new Error("File size cannot exceed 1 GB");
       }
 
       const valueAsString = JSON.stringify(value);
@@ -184,8 +195,6 @@ exports.FileStore = class {
       }
 
       fileData.splice(index, 1);
-      // newFileData.push(fileData.slice(index,fileData.length))
-      console.log(fileData);
 
       // re-write the filestore with updated data
       this.appendDataFromArray(fileData);
@@ -196,19 +205,3 @@ exports.FileStore = class {
     }
   }
 }
-
-// const main = () => {
-//   try {
-//     let filePath = homedir + "\\testing";
-// 		const store = new FileStore(filePath);
-		
-//     store.addEntry("Owais",{"data":1});
-//     store.addEntry("Owais0",{"data":2});
-//     // store.addEntry("Owais3",{"data":3}, 60);
-//     // console.log(readByKey("Owais3"));
-//     store.deleteByKey("Owais0");
-//   } catch (error) {
-//     console.error(error.message);
-//   }
-// };
-// main();
