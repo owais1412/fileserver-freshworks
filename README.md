@@ -31,4 +31,4 @@ function main() {
 
 ## Testing
 
-Run `npm test` for running all unit tests.
+Run `npm test` to run unit tests.
