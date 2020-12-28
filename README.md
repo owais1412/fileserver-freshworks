@@ -32,3 +32,7 @@ function main() {
 ## Testing
 
 Run `npm test` to run unit tests.
+
+## Platforms
+
+Tested on Windows 10 and Linux WSL2.
