@@ -22,6 +22,7 @@ describe("Store initialization with default path", () => {
 
 describe("Store initialization with custom path", () => {
   it("Should pass with correct path", () => {
+    // In custom path all folders should exist
     const filePath = path.join(homedir, "testing");
     const store = new FileStore(filePath);
     const actual = store.path;
@@ -30,6 +31,7 @@ describe("Store initialization with custom path", () => {
   });
 
   it("Should fail with wrong path", () => {
+    // In custom path all folders should exist
     const filePath = path.join(homedir, "testing");
     const store = new FileStore(filePath);
     const actual = store.path;
@@ -42,6 +44,7 @@ describe("Store initialization with custom path", () => {
    * This test case should be run separately with no filestore prebuilt
    */
   it("Should fail with multiple access of same filestore", () => {
+    // In custom path all folders should exist
     const filePath = path.join(homedir, "testing1");
     // create a new store
     const store = new FileStore(filePath);
